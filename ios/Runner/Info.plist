@@ -47,5 +47,9 @@
 	<true/>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Necesitamos acceso a tu galería de fotos.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Necesitamos acceso a tu cámara.</string>
 </dict>
 </plist>

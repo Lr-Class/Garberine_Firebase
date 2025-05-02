@@ -1,4 +1,4 @@
-import 'package:app_garb/screens/main_game_screen.dart';
+import 'package:app_garb/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'screens/login_screen.dart';
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
-        '/home': (context) => const MainGameScreen(),
+        '/home': (context) => const HomeScreen(),
       },
     );
   }
