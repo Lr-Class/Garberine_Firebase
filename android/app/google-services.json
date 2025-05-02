@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "749432688229",
+    "project_id": "proyecto-game-65267",
+    "storage_bucket": "proyecto-game-65267.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:749432688229:android:a2adcc9f9b5f65dfa4808c",
+        "android_client_info": {
+          "package_name": "com.example.app_garb"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyVh6eXMFSuL8SJNHUQ4u-AImOcA8LbPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
