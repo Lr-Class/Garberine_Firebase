@@ -5,6 +5,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
+import '../widgets/custom_snackbar.dart';
+
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
 
@@ -97,16 +99,24 @@ class _NewsScreenState extends State<NewsScreen> {
     User? user = _auth.currentUser;
 
     if (user == null || !_isAdmin) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('No tienes permisos para agregar noticias.'),
-      ));
+      CustomSnackbar.show(
+        context: context,
+        title: 'Acceso denegado',
+        message: 'No tienes permisos para agregar noticias.',
+        backgroundColor: Colors.red, // Color para error
+        textColor: Colors.white, // Texto blanco
+      );
       return;
     }
 
     if (_titleController.text.isEmpty || _bodyController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Completa todos los campos.'),
-      ));
+      CustomSnackbar.show(
+        context: context,
+        title: 'Campos vacíos',
+        message: 'Completa todos los campos.',
+        backgroundColor: Colors.orange, // Color para advertencia
+        textColor: Colors.white, // Texto blanco
+      );
       return;
     }
 
@@ -121,18 +131,26 @@ class _NewsScreenState extends State<NewsScreen> {
         'imageURL': imageUrl,
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Noticia agregada exitosamente.'),
-      ));
+      CustomSnackbar.show(
+        context: context,
+        title: '¡Éxito!',
+        message: 'Noticia agregada exitosamente.',
+        backgroundColor: Colors.green, // Color para éxito
+        textColor: Colors.white, // Texto blanco
+      );
 
       _titleController.clear();
       _bodyController.clear();
       setState(() => _image = null);
 
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Error al agregar noticia: $e'),
-      ));
+      CustomSnackbar.show(
+        context: context,
+        title: 'Error',
+        message: 'Error al agregar noticia: $e',
+        backgroundColor: Colors.red, // Color para error
+        textColor: Colors.white, // Texto blanco
+      );
     }
   }
 

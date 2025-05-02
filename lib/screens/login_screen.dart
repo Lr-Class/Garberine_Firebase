@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../widgets/custom_elevatedbutton.dart';
+import '../widgets/custom_snackbar.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -16,7 +17,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _loading = false;
-  bool _emailNotVerified = false; // Flag para saber si el email no ha sido verificado
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
@@ -35,32 +35,33 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     if (errorMessage != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMessage)));
+      CustomSnackbar.show(
+        context: context,
+        title: 'Error',
+        message: errorMessage,
+        backgroundColor: Colors.red, // Color de fondo para error
+        textColor: Colors.white, // Color del texto
+      );
     } else {
       // Verificación de si el correo está verificado
-      User? user = FirebaseAuth.instance.currentUser; // Aquí usamos FirebaseAuth
+      User? user = FirebaseAuth.instance.currentUser;
       if (user != null && !user.emailVerified) {
-        // Si el correo no está verificado, mostramos el botón de reenviar
-        setState(() {
-          _emailNotVerified = true;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Por favor, verifica tu correo antes de continuar.')));
+        CustomSnackbar.show(
+          context: context,
+          title: 'Verificación pendiente',
+          message: 'Por favor, verifica tu correo.',
+          backgroundColor: Colors.orange, // Color para advertencia
+          textColor: Colors.white, // Texto en blanco
+        );
       } else {
-        // Navegar al home
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('¡Bienvenido!')));
+        CustomSnackbar.show(
+          context: context,
+          title: '¡Bienvenido!',
+          message: 'Iniciaste sesión correctamente.',
+          backgroundColor: Colors.green, // Color para éxito
+          textColor: Colors.white, // Texto en blanco
+        );
         Navigator.pushReplacementNamed(context, '/home');
-      }
-    }
-  }
-
-  Future<void> _sendVerificationEmail() async {
-    User? user = FirebaseAuth.instance.currentUser; // Aquí usamos FirebaseAuth
-    if (user != null && !user.emailVerified) {
-      try {
-        await user.sendEmailVerification();
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Se ha reenviado el correo de verificación.')));
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
       }
     }
   }
@@ -126,23 +127,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     Navigator.pushNamed(context, '/register');
                   },
                   child: const Text('¿No tienes cuenta? Regístrate'),
-                ),
-                
-                // Botón invisible para reenviar el correo de verificación
-                Visibility(
-                  visible: _emailNotVerified,
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _sendVerificationEmail,
-                        child: const Text('Reenviar correo de verificación'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green, // Color de fondo del botón
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ],
             ),

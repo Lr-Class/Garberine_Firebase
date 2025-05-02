@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../widgets/custom_snackbar.dart';
+
 class CommunityScreen extends StatefulWidget {
   @override
   _CommunityScreenState createState() => _CommunityScreenState();
@@ -18,14 +20,27 @@ class _CommunityScreenState extends State<CommunityScreen> {
     final user = _auth.currentUser;
     if (user == null) return;
 
-    await _firestore.collection('community_messages').add({
-      'senderId': user.uid,
-      'senderUsername': user.displayName ?? 'Anonimo',
-      'message': _messageController.text.trim(),
-      'timestamp': FieldValue.serverTimestamp(),
-    });
+    try {
+      final userData = await _firestore.collection('users').doc(user.uid).get();
+      final username = userData.exists ? (userData.data()?['username'] ?? 'Anónimo') : 'Anónimo';
 
-    _messageController.clear();
+      await _firestore.collection('community_messages').add({
+        'senderId': user.uid,
+        'senderUsername': username,
+        'message': _messageController.text.trim(),
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      _messageController.clear();
+    } catch (e) {
+      CustomSnackbar.show(
+        context: context,
+        title: 'Error',
+        message: 'No se pudo enviar el mensaje.',
+        backgroundColor: Colors.red, // Color de fondo para error
+        textColor: Colors.white, // Color del texto para que sea legible
+      );
+    }
   }
 
   @override

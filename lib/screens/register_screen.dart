@@ -1,3 +1,4 @@
+import 'package:app_garb/widgets/custom_snackbar.dart';
 import 'package:app_garb/widgets/custom_textField.dart';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
@@ -40,10 +41,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     if (errorMessage != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMessage)));
+      CustomSnackbar.show(
+        context: context,
+        title: 'Error',
+        message: errorMessage,
+        backgroundColor: Colors.red, // Color de fondo para error
+        textColor: Colors.white, // Color del texto
+      );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Registro exitoso. Verifica tu correo electrónico.')),
+      CustomSnackbar.show(
+        context: context,
+        title: '¡Éxito!',
+        message: 'Registro exitoso. Verifica tu correo electrónico.',
+        backgroundColor: Colors.green, // Color para éxito
+        textColor: Colors.white, // Texto en blanco
       );
       Navigator.pop(context); // Volver al login
     }
