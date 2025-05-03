@@ -1,3 +1,4 @@
+import 'package:app_garb/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'community_screen.dart';
@@ -20,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
     NewsScreen(),
     MainGameScreen(),
     LeaderboardScreen(),
-    //SettingsScreen(),
+    ProfileScreen(),
   ];
 
   void _onTabTapped(int index) {
@@ -57,8 +58,8 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Ranking',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Ajustes',
+            icon: Icon(Icons.person),
+            label: 'Perfil',
           ),
         ],
       ),

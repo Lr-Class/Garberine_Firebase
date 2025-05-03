@@ -6,7 +6,7 @@ allprojects {
 }
 
 dependencies {
-    classpath 'com.google.gms:google-services:4.3.10' // o versión reciente
+    classpath("com.google.gms:google-services:4.3.10") // o versión reciente
 }
 
 val newBuildDir: Directory = rootProject.layout.buildDirectory.dir("../../build").get()
