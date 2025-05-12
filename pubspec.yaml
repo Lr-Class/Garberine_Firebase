@@ -20,6 +20,8 @@ dependencies:
   firebase_storage: ^12.4.5
   image_picker: ^1.1.2
   intl: ^0.20.2
+  provider: ^6.1.5
+  shared_preferences: ^2.5.3
   
 dev_dependencies:
   flutter_test:
@@ -33,3 +35,8 @@ flutter:
 
   assets:
     - assets/images/fondo_community.jpg
+    - assets/profile_images/avatar1.png
+    - assets/profile_images/avatar2.png
+    - assets/profile_images/avatar3.png
+    - assets/profile_images/avatar4.png
+    - assets/profile_images/avatar5.png

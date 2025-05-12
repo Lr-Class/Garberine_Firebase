@@ -30,13 +30,16 @@ class AuthService {
         // Enviar correo de verificación
         await user.sendEmailVerification();
 
-        // Guardar datos adicionales en Firestore
+        // Guardar datos adicionales en Firestore, incluyendo los puntajes de los juegos activos
         await _firestore.collection('users').doc(user.uid).set({
           'username': username,
           'fullName': fullName,
           'age': age,
           'email': email,
           'createdAt': FieldValue.serverTimestamp(),
+          'reactionTimeScore': 0, // Puntaje inicial para Reaction Time
+          'simonSaysScore': 0,    // Puntaje inicial para Simon Says
+          'tappingGameScore': 0,  // Puntaje inicial para Tapping Game
         });
 
         return null; // éxito
@@ -50,6 +53,7 @@ class AuthService {
       return 'Error desconocido';
     }
   }
+
 
   // Iniciar sesión
   Future<String?> login({

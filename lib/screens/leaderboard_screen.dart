@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 class LeaderboardScreen extends StatelessWidget {
   const LeaderboardScreen({super.key});
@@ -8,33 +8,37 @@ class LeaderboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Clasificación'),
-        backgroundColor: Colors.blueAccent,
+        title: const Text('Leaderboard'),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('leaderboard')
-            .orderBy('score', descending: true) // Ordenar por puntaje descendente
-            .limit(10) // Limitar a los 10 mejores
+            .collection('users')
+            .orderBy('totalScore', descending: true)
+            .limit(50) // Puedes mostrar top 50, o quitar el limit si quieres todos
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-
-          if (snapshot.hasError) {
-            return const Center(child: Text('Error al cargar el ranking.'));
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text('No hay datos aún.'));
           }
 
-          final leaderboardData = snapshot.data?.docs ?? [];
+          final users = snapshot.data!.docs;
 
           return ListView.builder(
-            itemCount: leaderboardData.length,
-            itemBuilder: (ctx, index) {
-              final leaderboardItem = leaderboardData[index];
+            itemCount: users.length,
+            itemBuilder: (context, index) {
+              final user = users[index];
+              final username = user['username'] ?? 'Sin nombre';
+              final totalScore = user['totalScore'] ?? 0;
+
               return ListTile(
-                title: Text(leaderboardItem['username']),
-                trailing: Text('${leaderboardItem['score']} puntos'),
+                leading: CircleAvatar(
+                  child: Text('${index + 1}'),
+                ),
+                title: Text(username),
+                trailing: Text('$totalScore pts'),
               );
             },
           );
@@ -43,3 +47,4 @@ class LeaderboardScreen extends StatelessWidget {
     );
   }
 }
+

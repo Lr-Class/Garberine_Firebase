@@ -1,6 +1,5 @@
 import 'package:app_garb/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
-
 import 'community_screen.dart';
 import 'leaderboard_screen.dart';
 import 'main_game_screen.dart';
@@ -19,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
     CommunityScreen(),
     NewsScreen(),
-    MainGameScreen(),
+    MainMenuScreen(),
     LeaderboardScreen(),
     ProfileScreen(),
   ];
@@ -43,15 +42,15 @@ class _HomeScreenState extends State<HomeScreen> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.people),
-            label: 'Comunidad',
+            label: 'Community',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.new_releases),
-            label: 'Noticias',
+            label: 'News',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.sports_esports),
-            label: 'Jugar',
+            label: 'Play',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.leaderboard),
@@ -59,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Perfil',
+            label: 'Profile',
           ),
         ],
       ),
