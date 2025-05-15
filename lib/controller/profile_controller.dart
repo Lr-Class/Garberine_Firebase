@@ -20,12 +20,14 @@ class ProfileController {
   Future<void> updateUserProfile({
     required String username,
     required String fullName,
+    required String photoUrl,
   }) async {
     if (currentUser == null) return;
 
     await _firestore.collection('users').doc(currentUser!.uid).update({
       'username': username,
       'fullName': fullName,
+      'photoUrl': photoUrl,
     });
   }
 

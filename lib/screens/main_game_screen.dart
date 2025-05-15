@@ -15,7 +15,7 @@ class MainMenuScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Minijuegos'),
+        title: const Text('Minigames'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),

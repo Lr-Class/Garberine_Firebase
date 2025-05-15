@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:app_garb/widgets/custom_snackbar.dart';
 import 'package:app_garb/widgets/custom_textField.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../services/auth_service.dart';
 import '../widgets/custom_elevatedbutton.dart';
 
@@ -13,64 +15,181 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _fullNameController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
-  bool _loading = false;
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _fullNameController = TextEditingController();
+  final _ageController = TextEditingController();
 
-  // Método de registro
+  bool _loading = false;
+  int _currentAvatarIndex = 0;
+  File? _selectedImage;
+
+  final List<String> _avatarPaths = [
+    'assets/profile_images/avatar1.png',
+    'assets/profile_images/avatar2.png',
+    'assets/profile_images/avatar3.png',
+    'assets/profile_images/avatar4.png',
+    'assets/profile_images/avatar5.png',
+  ];
+
+  void _nextAvatar() {
+    setState(() {
+      if (_currentAvatarIndex < _avatarPaths.length - 1) {
+        _currentAvatarIndex++;
+      } else {
+        _currentAvatarIndex = 0;
+      }
+      _selectedImage = null;
+    });
+  }
+
+  void _previousAvatar() {
+    setState(() {
+      if (_currentAvatarIndex > 0) {
+        _currentAvatarIndex--;
+      } else {
+        _currentAvatarIndex = _avatarPaths.length - 1;
+      }
+      _selectedImage = null;
+    });
+  }
+
+  Future<void> _pickImageFromGallery() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      setState(() {
+        _selectedImage = File(picked.path);
+      });
+    }
+  }
+
+  Future<void> _pickImageFromCamera() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.camera);
+    if (picked != null) {
+      setState(() {
+        _selectedImage = File(picked.path);
+      });
+    }
+  }
+
+  void _openImagePickerDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Seleccionar imagen"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text("Galería"),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImageFromGallery();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text("Cámara"),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImageFromCamera();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() {
-      _loading = true;
-    });
+    setState(() => _loading = true);
 
-    String? errorMessage = await AuthService().register(
+    final String? errorMessage = await AuthService().register(
       email: _emailController.text.trim(),
       password: _passwordController.text.trim(),
       username: _usernameController.text.trim(),
       fullName: _fullNameController.text.trim(),
       age: int.tryParse(_ageController.text.trim()) ?? 0,
+      localImageFile: _selectedImage,
+      defaultAvatarPath: _selectedImage == null ? _avatarPaths[_currentAvatarIndex] : null,
     );
 
-    setState(() {
-      _loading = false;
-    });
+    setState(() => _loading = false);
 
     if (errorMessage != null) {
       CustomSnackbar.show(
         context: context,
         title: 'Error',
         message: errorMessage,
-        backgroundColor: Colors.red, // Color de fondo para error
-        textColor: Colors.white, // Color del texto
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
       );
     } else {
       CustomSnackbar.show(
         context: context,
         title: '¡Éxito!',
         message: 'Registro exitoso. Verifica tu correo electrónico.',
-        backgroundColor: Colors.green, // Color para éxito
-        textColor: Colors.white, // Texto en blanco
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
       );
-      Navigator.pop(context); // Volver al login
+      Navigator.pop(context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final avatar = _selectedImage != null
+        ? FileImage(_selectedImage!)
+        : AssetImage(_avatarPaths[_currentAvatarIndex]) as ImageProvider;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Crear cuenta')),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
-              // Campo de nombre de usuario
+              const SizedBox(height: 10),
+              Center(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: 60,
+                      backgroundImage: avatar,
+                    ),
+                    Positioned(
+                      left: 0,
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back_ios),
+                        onPressed: _previousAvatar,
+                      ),
+                    ),
+                    Positioned(
+                      right: 0,
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_forward_ios),
+                        onPressed: _nextAvatar,
+                      ),
+                    ),
+                    Positioned(
+                      bottom: -10,
+                      child: IconButton(
+                        icon: const Icon(Icons.add_a_photo, color: Colors.blue),
+                        onPressed: _openImagePickerDialog,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
               CustomTextField(
                 controller: _usernameController,
                 labelText: 'Nombre de usuario (Juego)',
@@ -78,8 +197,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
               ),
               const SizedBox(height: 16),
-              
-              // Campo de nombre real
               CustomTextField(
                 controller: _fullNameController,
                 labelText: 'Nombre real',
@@ -87,8 +204,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
               ),
               const SizedBox(height: 16),
-              
-              // Campo de edad
               CustomTextField(
                 controller: _ageController,
                 labelText: 'Edad',
@@ -101,8 +216,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              
-              // Campo de correo electrónico
               CustomTextField(
                 controller: _emailController,
                 labelText: 'Correo electrónico',
@@ -111,8 +224,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
               ),
               const SizedBox(height: 16),
-              
-              // Campo de contraseña
               CustomTextField(
                 controller: _passwordController,
                 labelText: 'Contraseña',
@@ -121,14 +232,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 validator: (value) => value!.length < 6 ? 'Mínimo 6 caracteres' : null,
               ),
               const SizedBox(height: 20),
-              
-              // Botón de registro
               CustomElevatedButton(
                 text: 'Registrarse',
                 onPressed: _register,
                 isLoading: _loading,
-                backgroundColor: Colors.blueAccent, // Puedes cambiar el color
-                icon: Icons.person_add, // Icono opcional
+                backgroundColor: Colors.blueAccent,
+                icon: Icons.person_add,
               ),
             ],
           ),

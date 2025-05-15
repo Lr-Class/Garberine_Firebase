@@ -35,7 +35,7 @@ class _NewsScreenState extends State<NewsScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 4,
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: const Color.fromARGB(255, 109, 2, 158),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),

@@ -1,91 +1,100 @@
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:uuid/uuid.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  // Registrar nuevo usuario
   Future<String?> register({
-    required String email,
-    required String password,
-    required String username,
-    required String fullName,
-    required int age,
-  }) async {
-    try {
-      // Validar edad
-      if (age <= 0) {
-        return 'La edad debe ser mayor que 0.';
-      }
-
-      // Crear usuario con correo y contraseña
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      User? user = userCredential.user;
-      if (user != null) {
-        // Enviar correo de verificación
-        await user.sendEmailVerification();
-
-        // Guardar datos adicionales en Firestore, incluyendo los puntajes de los juegos activos
-        await _firestore.collection('users').doc(user.uid).set({
-          'username': username,
-          'fullName': fullName,
-          'age': age,
-          'email': email,
-          'createdAt': FieldValue.serverTimestamp(),
-          'reactionTimeScore': 0, // Puntaje inicial para Reaction Time
-          'simonSaysScore': 0,    // Puntaje inicial para Simon Says
-          'tappingGameScore': 0,  // Puntaje inicial para Tapping Game
-        });
-
-        return null; // éxito
-      } else {
-        return 'Error al crear usuario.';
-      }
-    } on FirebaseAuthException catch (e) {
-      // Manejo de errores de autenticación de Firebase
-      return e.message ?? 'Error desconocido al registrar el usuario';
-    } catch (e) {
-      return 'Error desconocido';
+  required String email,
+  required String password,
+  required String username,
+  required String fullName,
+  required int age,
+  File? localImageFile,
+  String? defaultAvatarPath,
+}) async {
+  try {
+    if (age <= 0) {
+      return 'La edad debe ser mayor que 0.';
     }
+
+    final UserCredential userCredential =
+        await _auth.createUserWithEmailAndPassword(email: email, password: password);
+
+    final User? user = userCredential.user;
+    if (user == null) return 'Error al crear usuario.';
+
+    await user.sendEmailVerification();
+
+    String? photoUrl;
+
+    if (localImageFile != null) {
+      final String imageId = const Uuid().v4();
+      final ref = _storage.ref().child('profile_images/$imageId.jpg');
+      await ref.putFile(localImageFile);
+      photoUrl = await ref.getDownloadURL();
+    } else if (defaultAvatarPath != null) {
+      photoUrl = defaultAvatarPath;
+    }
+
+    await _firestore.collection('users').doc(user.uid).set({
+      'username': username,
+      'fullName': fullName,
+      'age': age,
+      'email': email,
+      'photoUrl': photoUrl,
+      'createdAt': FieldValue.serverTimestamp(),
+      'reactionTimeScore': 0,
+      'simonSaysScore': 0,
+      'tappingGameScore': 0,
+      'qrScans': 0,
+      'scannedUserIds': [],
+      'rank': 'Principiante',
+      'achievements': {
+        'firstScan': false,
+        'fiveScans': false,
+        'tenScans': false,
+        'twentyScans': false,
+      },
+    });
+
+    return null;
+  } on FirebaseAuthException catch (e) {
+    return e.message ?? 'Error desconocido al registrar el usuario';
+  } catch (e) {
+    return 'Error desconocido';
   }
+}
 
-
-  // Iniciar sesión
   Future<String?> login({
     required String email,
     required String password,
   }) async {
     try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      final UserCredential userCredential =
+          await _auth.signInWithEmailAndPassword(email: email, password: password);
 
-      User? user = userCredential.user;
-      if (user != null) {
-        if (user.emailVerified) {
-          return null; // éxito
-        } else {
-          await _auth.signOut();
-          return 'Por favor verifica tu correo electrónico antes de iniciar sesión.';
-        }
-      } else {
-        return 'Usuario no encontrado.';
+      final User? user = userCredential.user;
+
+      if (user == null) return 'Usuario no encontrado.';
+      if (!user.emailVerified) {
+        await _auth.signOut();
+        return 'Por favor verifica tu correo electrónico antes de iniciar sesión.';
       }
+
+      return null;
     } on FirebaseAuthException catch (e) {
-      // Manejo de errores de autenticación de Firebase
       return e.message ?? 'Error desconocido al iniciar sesión';
     } catch (e) {
       return 'Error desconocido';
     }
   }
 
-  // Cerrar sesión
   Future<void> signOut() async {
     await _auth.signOut();
   }
