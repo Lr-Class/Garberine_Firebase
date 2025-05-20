@@ -9,6 +9,7 @@ class LeaderboardScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           'Tabla de Clasificación',
           style: TextStyle(

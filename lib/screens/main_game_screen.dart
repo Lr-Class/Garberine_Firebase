@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../games/screens/reaction_time_screen.dart';
 import '../games/screens/simon_says_screen.dart';
 import '../games/screens/tapping_game_screen.dart';

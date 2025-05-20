@@ -1,10 +1,12 @@
 import 'dart:io';
-import 'package:app_garb/widgets/custom_snackbar.dart';
-import 'package:app_garb/widgets/custom_textField.dart';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+
 import '../services/auth_service.dart';
-import '../widgets/custom_elevatedbutton.dart';
+import '../widgets/general/custom_elevatedbutton.dart';
+import '../widgets/general/custom_snackbar.dart';
+import '../widgets/general/custom_textfield.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);

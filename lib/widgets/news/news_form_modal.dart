@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../controller/news_controller.dart';
+import '../../controller/news_controller.dart';
 
 class NewsFormModal extends StatelessWidget {
   final NewsController controller;

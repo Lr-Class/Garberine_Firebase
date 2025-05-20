@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../controller/news_controller.dart';
 import '../services/news_service.dart';
-import '../widgets/news_form_modal.dart';
-import '../widgets/news_card.dart';
+import '../widgets/news/news_form_modal.dart';
+import '../widgets/news/news_card.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({Key? key}) : super(key: key);

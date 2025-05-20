@@ -7,9 +7,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../controller/profile_controller.dart';
 import '../controller/rank_controller.dart';
-import '../widgets/custom_snackbar.dart';
-import '../widgets/custom_textfield.dart';
-import '../widgets/custom_elevatedbutton.dart';
+import '../widgets/general/custom_snackbar.dart';
+import '../widgets/general/custom_textfield.dart';
+import '../widgets/general/custom_elevatedbutton.dart';
 import '../widgets/rank_progress_circle.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 

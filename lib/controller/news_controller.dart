@@ -1,10 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/news_service.dart';
-import '../widgets/custom_snackbar.dart';
+import '../widgets/general/custom_snackbar.dart';
 
 class NewsController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -43,6 +45,7 @@ class NewsController {
       await ref.putFile(image!);
       return await ref.getDownloadURL();
     } catch (e) {
+      // ignore: avoid_print
       print("Error uploading image: $e");
       return '';
     }
